@@ -1,8 +1,8 @@
 import "./style.css";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
-import houseUrl from "./assets/house.glb";
 import { App } from "./app";
+import { Card } from "./card";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera
@@ -11,8 +11,11 @@ async function createStarterScene(app: App) {
     new BABYLON.Vector3(0, 5, -10),
     app.scene
   );
+  // Let the camera render really close things (cards)
+  camera.minZ = 0;
   // Targets the camera to scene origin
   camera.setTarget(BABYLON.Vector3.Zero());
+
   // Attaches the camera to the canvas
   camera.attachControl(app.canvasElement, true);
   // Creates a light, aiming 0,1,0
@@ -40,19 +43,12 @@ async function createStarterScene(app: App) {
     app.scene
   );
 
-  // Load a mesh
-  const result = await BABYLON.SceneLoader.ImportMeshAsync(
-    "House", // The name of the node from the Blender scene.
-    houseUrl,
-    undefined,
-    app.scene
-  );
-  // When you import glb or gltf, the first mesh is always "root".
-  const houseMesh = result.meshes[0];
-  houseMesh.position = new BABYLON.Vector3(1.5, 0, 0);
-  // Rotate 90 degree along the Y axis to turn the house towards the camera.
-  // This good to know and also I messed up the rotation in Blender.
-  houseMesh.rotate(new BABYLON.Vector3(0, 1, 0), BABYLON.Tools.ToRadians(90));
+  // Card
+  const numCards = 8;
+  for (let i = 0; i < numCards; i++) {
+    const card = await Card.createCard(app.scene);
+    card.putInFrontOfCamera(camera, i, numCards);
+  }
 }
 
 async function main() {
