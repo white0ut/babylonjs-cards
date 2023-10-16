@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  background-color: #c3c3c3;
+}
+
+#app {
+  width: 960px;
+  height: 540px;
+  background-color: #fff;
+}
