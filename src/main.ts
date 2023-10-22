@@ -2,7 +2,7 @@ import "./style.css";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { App } from "./app";
-import { Card } from "./card";
+import { CardManager } from "./card_manager";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera
@@ -41,12 +41,10 @@ async function createStarterScene(app: App) {
     app.scene
   );
 
-  // Card
-  const numCards = 8;
-  for (let i = 0; i < numCards; i++) {
-    const card = await Card.createCard(app.scene);
-    card.putInFrontOfCamera(camera, i, numCards);
-  }
+  const cardManager = new CardManager(camera);
+  cardManager.createDrawPile(20);
+  await cardManager.drawCardsToHand(5);
+  cardManager.renderHand();
 }
 
 async function main() {
