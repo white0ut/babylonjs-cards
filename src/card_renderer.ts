@@ -64,7 +64,10 @@ export class CardRenderer {
     );
     this.controlMesh.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnLeftPickTrigger, () => {
-        getCardManger().discardCardFromHand(this.index);
+        // Hack to make sure the card is already in hover state.
+        if (this.rootMesh.position.z === 0.19) {
+          getCardManger().discardCardFromHand(this.index);
+        }
       })
     );
   }
