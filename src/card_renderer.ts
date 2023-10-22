@@ -11,6 +11,7 @@ import {
 } from "@babylonjs/core";
 import * as B from "@babylonjs/core";
 import { cardUrl } from "./asset_loader";
+import { getCardManger } from "./card_manager";
 
 export class CardRenderer {
   /** The root mesh for positioning. */
@@ -20,6 +21,7 @@ export class CardRenderer {
   /** The mesh that we use for interacting. */
   controlMesh: AbstractMesh | null = null;
   readonly scene: Scene;
+  index = -1;
 
   static async createCard(scene: Scene): Promise<CardRenderer> {
     const result = await SceneLoader.ImportMeshAsync("", cardUrl, "", scene);
@@ -62,12 +64,15 @@ export class CardRenderer {
     );
     this.controlMesh.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnLeftPickTrigger, () => {
-        console.log("Card selected.");
+        getCardManger().discardCardFromHand(this.index);
       })
     );
   }
 
   putInFrontOfCamera(camera: Camera, index: number, totalCards: number) {
+    // Update the index.
+    this.index = index;
+
     // What's the most we want a card to move to the left or right?
     const xAllowed = Math.min((totalCards / 6) * 0.1, 0.1);
     const x = funClamp(-1 * xAllowed, xAllowed, index, totalCards);

@@ -7,4 +7,9 @@ export class Card {
   async initializeRenderer() {
     this.renderer = await CardRenderer.createCard(getApp().scene);
   }
+
+  dispose() {
+    this.renderer?.dispose();
+    this.renderer = null;
+  }
 }

@@ -1,6 +1,8 @@
 import { Camera } from "@babylonjs/core";
 import { Card } from "./card";
 
+let globalCardManager: CardManager | null = null;
+
 /**
  * A class for managing card positioning, hands,
  * decks, and discard piles.
@@ -8,9 +10,11 @@ import { Card } from "./card";
 export class CardManager {
   private drawPile: Card[] = [];
   private hand: Card[] = [];
-  // private discardPile: Card[] = [];
+  private discardPile: Card[] = [];
 
-  constructor(private camera: Camera) {}
+  constructor(private camera: Camera) {
+    globalCardManager = this;
+  }
 
   createDrawPile(count: number) {
     for (let i = 0; i < count; i++) {
@@ -42,6 +46,13 @@ export class CardManager {
     return Promise.all(draws);
   }
 
+  discardCardFromHand(index: number) {
+    const discardedCard = this.hand.splice(index, 1)[0];
+    discardedCard.dispose();
+    this.discardPile.push(discardedCard);
+    this.renderHand();
+  }
+
   renderHand() {
     for (let cardIndex = 0; cardIndex < this.hand.length; cardIndex++) {
       this.hand[cardIndex].renderer!.putInFrontOfCamera(
@@ -51,4 +62,11 @@ export class CardManager {
       );
     }
   }
+}
+
+export function getCardManger() {
+  if (!globalCardManager) {
+    throw new Error("Card manager not found.");
+  }
+  return globalCardManager;
 }
