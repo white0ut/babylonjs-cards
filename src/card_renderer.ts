@@ -44,7 +44,7 @@ export class CardRenderer {
       },
       this.scene
     );
-    plane.visibility = 0;
+    plane.visibility = 0.5;
 
     return plane;
   }
@@ -77,9 +77,10 @@ export class CardRenderer {
     const xAllowed = Math.min((totalCards / 6) * 0.1, 0.1);
     const x = funClamp(-1 * xAllowed, xAllowed, index, totalCards);
     // How much should we lift the card above the baseline?
-    const yBoost = totalCards
-      ? Math.sin((index / (totalCards - 1)) * Math.PI) * 0.01
-      : 0;
+    const yBoost =
+      totalCards > 1
+        ? Math.sin((index / (totalCards - 1)) * Math.PI) * 0.01
+        : 0;
     // How much should we tilt the card to the side?
     const rotateZ = funClamp(-5, 5, index, totalCards);
 
