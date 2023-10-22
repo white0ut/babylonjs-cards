@@ -1,11 +1,13 @@
 import * as GUI from "@babylonjs/gui";
 import { getApp } from "./app";
+import { getCardManger } from "./card_manager";
 
 let globalGameGui: GameGUI | null = null;
 
 export class GameGUI {
   private readonly drawPileLabel: GUI.TextBlock;
   private readonly discardPileLabel: GUI.TextBlock;
+  private readonly drawButton: GUI.Button;
 
   static async createGameGUI(): Promise<GameGUI> {
     const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI(
@@ -13,7 +15,7 @@ export class GameGUI {
       true,
       getApp().scene
     );
-    await advancedTexture.parseFromSnippetAsync("KHNI6A#2");
+    await advancedTexture.parseFromSnippetAsync("KHNI6A#3");
 
     return new GameGUI(advancedTexture);
   }
@@ -29,6 +31,12 @@ export class GameGUI {
     this.discardPileLabel = container.getChildByName(
       "DiscardPileLabel"
     ) as GUI.TextBlock;
+    this.drawButton = container.getChildByName("DrawButton") as GUI.Button;
+
+    this.drawButton.onPointerUpObservable.add(async () => {
+      await getCardManger().drawCardsToHand(1);
+      getCardManger().renderHand();
+    });
   }
 
   updateDrawPile(count: number) {
