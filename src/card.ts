@@ -18,7 +18,7 @@ export class Card {
   /** The dipslayed mesh. */
   readonly cardMesh: AbstractMesh;
   /** The mesh that we use for interacting. */
-  controlMesh: B.Mesh | null = null;
+  controlMesh: AbstractMesh | null = null;
   readonly scene: Scene;
 
   static async createCard(scene: Scene): Promise<Card> {
@@ -58,6 +58,11 @@ export class Card {
     this.controlMesh.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, () => {
         this.rootMesh.position.z = 0.2;
+      })
+    );
+    this.controlMesh.actionManager.registerAction(
+      new ExecuteCodeAction(ActionManager.OnLeftPickTrigger, () => {
+        console.log("Card selected.");
       })
     );
   }
