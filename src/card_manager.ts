@@ -23,10 +23,12 @@ export class CardManager {
   }
 
   drawCard(): Card | undefined {
-    // TODO: Shuffle
-    if (this.drawPile.length) {
-      return this.drawPile.pop();
+    if (!this.drawPile.length && this.discardPile.length) {
+      this.drawPile = this.discardPile;
+      this.discardPile = [];
+      this.shuffle(this.drawPile);
     }
+    return this.drawPile.pop();
   }
 
   async drawCardTohand(): Promise<Card | undefined> {
@@ -60,6 +62,24 @@ export class CardManager {
         cardIndex,
         this.hand.length
       );
+    }
+  }
+
+  /**
+   * Shuffles and array of cards in place.
+   * https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+   */
+  private shuffle(cards: Card[]) {
+    let currentIndex = cards.length;
+    let randomIndex: number;
+    while (currentIndex > 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      // Swaps current index with random index.
+      [cards[currentIndex], cards[randomIndex]] = [
+        cards[randomIndex],
+        cards[currentIndex],
+      ];
     }
   }
 }

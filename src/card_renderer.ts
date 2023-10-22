@@ -44,7 +44,7 @@ export class CardRenderer {
       },
       this.scene
     );
-    plane.visibility = 0.5;
+    plane.visibility = 0;
 
     return plane;
   }
