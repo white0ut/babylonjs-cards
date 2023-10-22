@@ -90,6 +90,14 @@ export class CardManager {
       ];
     }
   }
+
+  getDrawPileSize(): number {
+    return this.drawPile.length;
+  }
+
+  getDiscardPileSize(): number {
+    return this.discardPile.length;
+  }
 }
 
 export function getCardManger() {

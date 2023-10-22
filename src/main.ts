@@ -3,6 +3,7 @@ import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { App } from "./app";
 import { CardManager } from "./card_manager";
+import { GameGUI } from "./gui";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera
@@ -45,6 +46,9 @@ async function createStarterScene(app: App) {
   cardManager.createDrawPile(20);
   await cardManager.drawCardsToHand(5);
   cardManager.renderHand();
+
+  const gui = await GameGUI.createGameGUI();
+  gui.updateDrawPile(cardManager.getDrawPileSize());
 }
 
 async function main() {
