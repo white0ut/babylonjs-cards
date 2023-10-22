@@ -108,7 +108,7 @@ export class CardRenderer {
   }
 
   dispose() {
-    this.rootMesh.dispose(true, true);
+    this.rootMesh.dispose(false, true);
     this.controlMesh?.dispose();
   }
 }
