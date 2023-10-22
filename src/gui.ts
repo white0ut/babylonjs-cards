@@ -39,3 +39,8 @@ export class GameGUI {
     this.discardPileLabel.text = `Discard pile: ${count}`;
   }
 }
+
+export function getGameGUI(): GameGUI {
+  if (!globalGameGui) throw new Error("Game GUI not found");
+  return globalGameGui;
+}

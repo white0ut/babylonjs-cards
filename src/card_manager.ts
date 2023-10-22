@@ -1,5 +1,6 @@
 import { Camera } from "@babylonjs/core";
 import { Card } from "./card";
+import { getGameGUI } from "./gui";
 
 let globalCardManager: CardManager | null = null;
 
@@ -64,6 +65,9 @@ export class CardManager {
         this.hand.length
       );
     }
+    const gui = getGameGUI();
+    gui.updateDrawPile(this.drawPile.length);
+    gui.updateDiscardPile(this.discardPile.length);
   }
 
   dispose() {

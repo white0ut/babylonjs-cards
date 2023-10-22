@@ -42,13 +42,12 @@ async function createStarterScene(app: App) {
     app.scene
   );
 
+  await GameGUI.createGameGUI();
+
   const cardManager = new CardManager(camera);
   cardManager.createDrawPile(20);
   await cardManager.drawCardsToHand(5);
   cardManager.renderHand();
-
-  const gui = await GameGUI.createGameGUI();
-  gui.updateDrawPile(cardManager.getDrawPileSize());
 }
 
 async function main() {
