@@ -16,8 +16,6 @@ async function createStarterScene(app: App) {
   // Targets the camera to scene origin
   camera.setTarget(BABYLON.Vector3.Zero());
 
-  // Attaches the camera to the canvas
-  camera.attachControl(app.canvasElement, true);
   // Creates a light, aiming 0,1,0
   const light = new BABYLON.HemisphericLight(
     "light",

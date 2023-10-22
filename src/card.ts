@@ -10,7 +10,7 @@ import {
   ExecuteCodeAction,
 } from "@babylonjs/core";
 import * as B from "@babylonjs/core";
-import cardUrl from "./assets/card.glb";
+import { cardUrl } from "./asset_loader";
 
 export class Card {
   /** The root mesh for positioning. */
@@ -84,9 +84,9 @@ export class Card {
     // Control mesh.
     this.controlMesh?.dispose();
 
+    // I found this number works well.
     const magicWidthBonus = 0.016;
     const controlMeshWidth = ((xAllowed + magicWidthBonus) * 2) / totalCards;
-    console.log(controlMeshWidth);
 
     this.controlMesh = this.createControlPlaneMesh(controlMeshWidth);
     this.controlMesh.setParent(camera);
