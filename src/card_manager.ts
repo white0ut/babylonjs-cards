@@ -13,6 +13,7 @@ export class CardManager {
   private discardPile: Card[] = [];
 
   constructor(private camera: Camera) {
+    if (globalCardManager) throw new Error("Card manager already exists");
     globalCardManager = this;
   }
 
@@ -63,6 +64,13 @@ export class CardManager {
         this.hand.length
       );
     }
+  }
+
+  dispose() {
+    for (let card of this.hand) {
+      card.dispose();
+    }
+    globalCardManager = null;
   }
 
   /**
