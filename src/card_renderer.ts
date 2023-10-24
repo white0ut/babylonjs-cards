@@ -12,6 +12,13 @@ import {
 import * as B from "@babylonjs/core";
 import { cardUrl } from "./asset_loader";
 import { getCardManger } from "./card_manager";
+import { getApp } from "./app";
+
+enum CardRenderState {
+  UNDEFINED,
+  HOVER,
+  PICKED,
+}
 
 export class CardRenderer {
   /** The root mesh for positioning. */
@@ -22,6 +29,7 @@ export class CardRenderer {
   controlMesh: AbstractMesh | null = null;
   readonly scene: Scene;
   index = -1;
+  state = CardRenderState.UNDEFINED;
 
   static async createCard(scene: Scene): Promise<CardRenderer> {
     const result = await SceneLoader.ImportMeshAsync("", cardUrl, "", scene);
@@ -33,6 +41,9 @@ export class CardRenderer {
     this.rootMesh = meshes[0];
     this.cardMesh = meshes[1];
     this.scene = scene;
+
+    this.cardMesh.outlineColor = B.Color3.Blue();
+    this.cardMesh.outlineWidth = 0.001;
   }
 
   private createControlPlaneMesh(width: number): B.Mesh {
@@ -49,24 +60,63 @@ export class CardRenderer {
     return plane;
   }
 
+  private setState(state: CardRenderState) {
+    if (this.state !== state) {
+      this.state = state;
+      switch (state) {
+        case CardRenderState.UNDEFINED:
+          this.rootMesh.position.z = 0.2;
+          break;
+        case CardRenderState.HOVER:
+          this.rootMesh.position.z = 0.19;
+          break;
+        case CardRenderState.PICKED:
+          this.rootMesh.position.z = 0.18;
+      }
+    }
+  }
+
   private handleHover() {
     if (!this.controlMesh) return;
     this.controlMesh.actionManager = new ActionManager();
     this.controlMesh.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, () => {
-        this.rootMesh.position.z = 0.19;
+        if (this.state === CardRenderState.UNDEFINED) {
+          this.setState(CardRenderState.HOVER);
+        }
       })
     );
     this.controlMesh.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, () => {
-        this.rootMesh.position.z = 0.2;
+        if (this.state === CardRenderState.HOVER) {
+          this.setState(CardRenderState.UNDEFINED);
+        }
       })
     );
     this.controlMesh.actionManager.registerAction(
-      new ExecuteCodeAction(ActionManager.OnLeftPickTrigger, () => {
-        // Hack to make sure the card is already in hover state.
-        if (this.rootMesh.position.z === 0.19) {
-          getCardManger().discardCardFromHand(this.index);
+      new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {
+        if (this.state === CardRenderState.HOVER) {
+          this.setState(CardRenderState.PICKED);
+          this.cardMesh.renderOutline = true;
+          const canvasElement = getApp().canvasElement;
+          canvasElement.addEventListener("pointermove", (ev: MouseEvent) => {
+            if (ev.offsetY < canvasElement.height / 2) {
+              this.cardMesh.outlineColor = B.Color3.Green();
+            } else {
+              this.cardMesh.outlineColor = B.Color3.Blue();
+            }
+          });
+          canvasElement.addEventListener(
+            "pointerup",
+            (ev: MouseEvent) => {
+              this.cardMesh.renderOutline = false;
+              this.setState(CardRenderState.UNDEFINED);
+              if (ev.offsetY < canvasElement.height / 2) {
+                getCardManger().discardCardFromHand(this.index);
+              }
+            },
+            { once: true }
+          );
         }
       })
     );
