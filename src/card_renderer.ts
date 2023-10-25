@@ -19,6 +19,7 @@ enum CardRenderState {
   UNDEFINED,
   HOVER,
   PICKED,
+  ELIGIBLE_TO_PLAY,
 }
 
 export class CardRenderer {
@@ -26,6 +27,8 @@ export class CardRenderer {
   readonly rootMesh: AbstractMesh;
   /** The displayed mesh. */
   readonly cardMesh: AbstractMesh;
+  /** The border around the card. */
+  readonly borderMesh: AbstractMesh;
   /** The mesh that we use for interacting. */
   controlMesh: AbstractMesh | null = null;
   readonly scene: Scene;
@@ -41,11 +44,16 @@ export class CardRenderer {
   constructor(result: ISceneLoaderAsyncResult, scene: Scene) {
     const meshes = result.meshes;
     this.rootMesh = meshes[0];
-    this.cardMesh = meshes[1];
+    // Not sure why these indices seem backwards.
+    this.cardMesh = meshes[2];
+    this.borderMesh = meshes[1];
     this.scene = scene;
 
-    this.cardMesh.outlineColor = B.Color3.Blue();
-    this.cardMesh.outlineWidth = 0.001;
+    this.borderMesh.isVisible = false;
+    const borderMaterial = new B.StandardMaterial("BorderMaterial", scene);
+    borderMaterial.diffuseColor = B.Color3.Blue();
+    borderMaterial.emissiveColor = B.Color3.Blue();
+    this.borderMesh.material = borderMaterial;
 
     this.setUpRenderObservable();
   }
@@ -79,8 +87,10 @@ export class CardRenderer {
     if (this.state !== state) {
       this.state = state;
       const targetPosition = this.rootMesh.position.clone();
+      const borderMaterial = this.borderMesh.material as B.StandardMaterial;
       switch (state) {
         case CardRenderState.UNDEFINED:
+          this.borderMesh.isVisible = false;
           targetPosition.z = Z_POS.base;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
@@ -89,6 +99,7 @@ export class CardRenderer {
           );
           break;
         case CardRenderState.HOVER:
+          this.borderMesh.isVisible = false;
           targetPosition.z = Z_POS.hover;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
@@ -97,12 +108,25 @@ export class CardRenderer {
           );
           break;
         case CardRenderState.PICKED:
+          this.borderMesh.isVisible = true;
+          borderMaterial.emissiveColor = B.Color3.Blue();
           targetPosition.z = Z_POS.picked;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
             10
           );
+          break;
+        case CardRenderState.ELIGIBLE_TO_PLAY:
+          this.borderMesh.isVisible = true;
+          borderMaterial.emissiveColor = B.Color3.Green();
+          targetPosition.z = Z_POS.picked;
+          this.positionLerp = new V3Lerp(
+            this.rootMesh.position,
+            targetPosition,
+            10
+          );
+          break;
       }
     }
   }
@@ -128,13 +152,12 @@ export class CardRenderer {
       new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {
         if (this.state === CardRenderState.HOVER) {
           this.setState(CardRenderState.PICKED);
-          this.cardMesh.renderOutline = true;
           const canvasElement = getApp().canvasElement;
           canvasElement.addEventListener("pointermove", (ev: MouseEvent) => {
             if (ev.offsetY < canvasElement.height / 2) {
-              this.cardMesh.outlineColor = B.Color3.Green();
+              this.setState(CardRenderState.ELIGIBLE_TO_PLAY);
             } else {
-              this.cardMesh.outlineColor = B.Color3.Blue();
+              this.setState(CardRenderState.PICKED);
             }
           });
           canvasElement.addEventListener(
