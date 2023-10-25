@@ -153,16 +153,24 @@ export class CardRenderer {
         if (this.state === CardRenderState.HOVER) {
           this.setState(CardRenderState.PICKED);
           const canvasElement = getApp().canvasElement;
-          canvasElement.addEventListener("pointermove", (ev: MouseEvent) => {
-            if (ev.offsetY < canvasElement.height / 2) {
-              this.setState(CardRenderState.ELIGIBLE_TO_PLAY);
-            } else {
-              this.setState(CardRenderState.PICKED);
+          const pointerMoveAbortController = new AbortController();
+          canvasElement.addEventListener(
+            "pointermove",
+            (ev: MouseEvent) => {
+              if (ev.offsetY < canvasElement.height / 2) {
+                this.setState(CardRenderState.ELIGIBLE_TO_PLAY);
+              } else {
+                this.setState(CardRenderState.PICKED);
+              }
+            },
+            {
+              signal: pointerMoveAbortController.signal,
             }
-          });
+          );
           canvasElement.addEventListener(
             "pointerup",
             (ev: MouseEvent) => {
+              pointerMoveAbortController.abort();
               this.cardMesh.renderOutline = false;
               this.setState(CardRenderState.UNDEFINED);
               if (ev.offsetY < canvasElement.height / 2) {
