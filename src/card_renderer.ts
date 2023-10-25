@@ -81,7 +81,7 @@ export class CardRenderer {
       const targetPosition = this.rootMesh.position.clone();
       switch (state) {
         case CardRenderState.UNDEFINED:
-          targetPosition.z = 0.2;
+          targetPosition.z = Z_POS.base;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
@@ -89,7 +89,7 @@ export class CardRenderer {
           );
           break;
         case CardRenderState.HOVER:
-          targetPosition.z = 0.19;
+          targetPosition.z = Z_POS.hover;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
@@ -97,7 +97,7 @@ export class CardRenderer {
           );
           break;
         case CardRenderState.PICKED:
-          targetPosition.z = 0.18;
+          targetPosition.z = Z_POS.picked;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
@@ -163,18 +163,21 @@ export class CardRenderer {
     this.index = index;
 
     // What's the most we want a card to move to the left or right?
-    const xAllowed = Math.min((totalCards / 6) * 0.1, 0.1);
-    const x = funClamp(-1 * xAllowed, xAllowed, index, totalCards);
+    const xOffset = Math.min(
+      (totalCards / X_POS.maxOffsetAtThisManyCards) * X_POS.maxOffset,
+      X_POS.maxOffset
+    );
+    const x = funClamp(-1 * xOffset, xOffset, index, totalCards);
     // How much should we lift the card above the baseline?
     const yBoost =
       totalCards > 1
-        ? Math.sin((index / (totalCards - 1)) * Math.PI) * 0.01
+        ? Math.sin((index / (totalCards - 1)) * Math.PI) * Y_POS.maxOffset
         : 0;
     // How much should we tilt the card to the side?
-    const rotateZ = funClamp(-5, 5, index, totalCards);
+    const rotateZ = funClamp(-1 * Z_ROT.max, Z_ROT.max, index, totalCards);
 
     this.rootMesh.setParent(camera);
-    const targetPosition = new Vector3(x, -0.07 + yBoost, 0.2);
+    const targetPosition = new Vector3(x, Y_POS.base + yBoost, Z_POS.base);
     if (immediately) {
       this.rootMesh.position = targetPosition;
     } else {
@@ -185,8 +188,8 @@ export class CardRenderer {
       );
     }
     this.rootMesh.rotation = new Vector3(
-      Tools.ToRadians(190),
-      Tools.ToRadians(2),
+      Tools.ToRadians(X_ROT.base),
+      Tools.ToRadians(Y_ROT.base),
       Tools.ToRadians(rotateZ)
     );
 
@@ -194,8 +197,9 @@ export class CardRenderer {
     this.controlMesh?.dispose();
 
     // I found this number works well.
+    // TODO: Put control mesh magic numbers in variables.
     const magicWidthBonus = 0.016;
-    const controlMeshWidth = ((xAllowed + magicWidthBonus) * 2) / totalCards;
+    const controlMeshWidth = ((xOffset + magicWidthBonus) * 2) / totalCards;
 
     this.controlMesh = this.createControlPlaneMesh(controlMeshWidth);
     this.controlMesh.setParent(camera);
@@ -209,6 +213,32 @@ export class CardRenderer {
     this.rootMesh.dispose(false, true);
   }
 }
+
+/**
+ * Magic numbers
+ */
+const X_POS = {
+  maxOffset: 0.1,
+  maxOffsetAtThisManyCards: 6,
+};
+const Y_POS = {
+  base: -0.07,
+  maxOffset: 0.01,
+};
+const Z_POS = {
+  base: 0.2,
+  hover: 0.19,
+  picked: 0.18,
+};
+const X_ROT = {
+  base: 190,
+};
+const Y_ROT = {
+  base: 2,
+};
+const Z_ROT = {
+  max: 5,
+};
 
 /**
  * Given the index and the totoal, returns the
