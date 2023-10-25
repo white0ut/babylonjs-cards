@@ -24,7 +24,7 @@ enum CardRenderState {
 export class CardRenderer {
   /** The root mesh for positioning. */
   readonly rootMesh: AbstractMesh;
-  /** The dipslayed mesh. */
+  /** The displayed mesh. */
   readonly cardMesh: AbstractMesh;
   /** The mesh that we use for interacting. */
   controlMesh: AbstractMesh | null = null;
@@ -47,7 +47,7 @@ export class CardRenderer {
     this.cardMesh.outlineColor = B.Color3.Blue();
     this.cardMesh.outlineWidth = 0.001;
 
-    this.setUpActions();
+    this.setUpRenderObservable();
   }
 
   private createControlPlaneMesh(width: number): B.Mesh {
@@ -65,7 +65,7 @@ export class CardRenderer {
     return plane;
   }
 
-  private setUpActions() {
+  private setUpRenderObservable() {
     const beforeRender = getApp().scene.onBeforeRenderObservable.add(() => {
       if (this.positionLerp) {
         this.rootMesh.position = this.positionLerp.next();
@@ -241,7 +241,7 @@ const Z_ROT = {
 };
 
 /**
- * Given the index and the totoal, returns the
+ * Given the index and the total, returns the
  * proportional spot between min and max.
  */
 function funClamp(
