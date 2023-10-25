@@ -20,6 +20,28 @@ enum CardRenderState {
   PICKED,
 }
 
+class V3Lerp {
+  private currentStep = 0;
+  constructor(
+    private readonly start: Vector3,
+    private readonly end: Vector3,
+    private readonly duration: number
+  ) {}
+
+  next(): Vector3 {
+    if (this.currentStep === this.duration) return this.end;
+    return Vector3.Lerp(
+      this.start,
+      this.end,
+      ++this.currentStep / this.duration
+    );
+  }
+
+  done(): boolean {
+    return this.currentStep === this.duration;
+  }
+}
+
 export class CardRenderer {
   /** The root mesh for positioning. */
   readonly rootMesh: AbstractMesh;
@@ -30,6 +52,7 @@ export class CardRenderer {
   readonly scene: Scene;
   index = -1;
   state = CardRenderState.UNDEFINED;
+  positionLerp: V3Lerp | null = null;
 
   static async createCard(scene: Scene): Promise<CardRenderer> {
     const result = await SceneLoader.ImportMeshAsync("", cardUrl, "", scene);
@@ -44,6 +67,8 @@ export class CardRenderer {
 
     this.cardMesh.outlineColor = B.Color3.Blue();
     this.cardMesh.outlineWidth = 0.001;
+
+    this.setUpActions();
   }
 
   private createControlPlaneMesh(width: number): B.Mesh {
@@ -62,22 +87,43 @@ export class CardRenderer {
   }
 
   private setUpActions() {
-    const beforeRender = getApp().scene.onBeforeRenderObservable.add(() => {});
+    const beforeRender = getApp().scene.onBeforeRenderObservable.add(() => {
+      if (this.positionLerp) {
+        this.rootMesh.position = this.positionLerp.next();
+        if (this.positionLerp.done()) this.positionLerp = null;
+      }
+    });
     this.rootMesh.onDisposeObservable.addOnce(() => beforeRender?.remove());
   }
 
   private setState(state: CardRenderState) {
     if (this.state !== state) {
       this.state = state;
+      const targetPosition = this.rootMesh.position.clone();
       switch (state) {
         case CardRenderState.UNDEFINED:
-          this.rootMesh.position.z = 0.2;
+          targetPosition.z = 0.2;
+          this.positionLerp = new V3Lerp(
+            this.rootMesh.position,
+            targetPosition,
+            10
+          );
           break;
         case CardRenderState.HOVER:
-          this.rootMesh.position.z = 0.19;
+          targetPosition.z = 0.19;
+          this.positionLerp = new V3Lerp(
+            this.rootMesh.position,
+            targetPosition,
+            10
+          );
           break;
         case CardRenderState.PICKED:
-          this.rootMesh.position.z = 0.18;
+          targetPosition.z = 0.18;
+          this.positionLerp = new V3Lerp(
+            this.rootMesh.position,
+            targetPosition,
+            10
+          );
       }
     }
   }
@@ -128,7 +174,12 @@ export class CardRenderer {
     );
   }
 
-  putInFrontOfCamera(camera: Camera, index: number, totalCards: number) {
+  putInFrontOfCamera(
+    camera: Camera,
+    index: number,
+    totalCards: number,
+    immediately = false
+  ) {
     // Update the index.
     this.index = index;
 
@@ -144,7 +195,16 @@ export class CardRenderer {
     const rotateZ = funClamp(-5, 5, index, totalCards);
 
     this.rootMesh.setParent(camera);
-    this.rootMesh.position = new Vector3(x, -0.07 + yBoost, 0.2);
+    const targetPosition = new Vector3(x, -0.07 + yBoost, 0.2);
+    if (immediately) {
+      this.rootMesh.position = targetPosition;
+    } else {
+      this.positionLerp = new V3Lerp(
+        this.rootMesh.position,
+        targetPosition,
+        10
+      );
+    }
     this.rootMesh.rotation = new Vector3(
       Tools.ToRadians(190),
       Tools.ToRadians(2),
