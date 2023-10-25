@@ -57,7 +57,13 @@ export class CardRenderer {
     );
     plane.visibility = 0;
 
+    this.rootMesh.onDisposeObservable.addOnce(() => plane.dispose());
     return plane;
+  }
+
+  private setUpActions() {
+    const beforeRender = getApp().scene.onBeforeRenderObservable.add(() => {});
+    this.rootMesh.onDisposeObservable.addOnce(() => beforeRender?.remove());
   }
 
   private setState(state: CardRenderState) {
@@ -162,7 +168,6 @@ export class CardRenderer {
 
   dispose() {
     this.rootMesh.dispose(false, true);
-    this.controlMesh?.dispose();
   }
 }
 
