@@ -3,7 +3,6 @@ import {
   ISceneLoaderAsyncResult,
   Scene,
   SceneLoader,
-  Camera,
   Vector3,
   Tools,
   ActionManager,
@@ -54,6 +53,8 @@ export class CardRenderer {
     borderMaterial.diffuseColor = B.Color3.Blue();
     borderMaterial.emissiveColor = B.Color3.Blue();
     this.borderMesh.material = borderMaterial;
+
+    this.rootMesh.setParent(scene.getCameraByName("camera1"));
 
     this.setUpRenderObservable();
   }
@@ -184,15 +185,23 @@ export class CardRenderer {
     );
   }
 
-  putInFrontOfCamera(
-    camera: Camera,
+  /**
+   * Returns the base position and rotation for the card in the hand.
+   * @param camera The camera to parent the cards to.
+   * @param index The index of this card in the hand.
+   * @param totalCards The total number of cards in the hand
+   * @param update Whether this should update the cards base transformation member variable.
+   */
+  getBaseTransformation(
     index: number,
-    totalCards: number,
-    immediately = false
-  ) {
-    // Update the index.
-    this.index = index;
-
+    totalCards: number
+  ): {
+    position: Vector3;
+    rotation: Vector3;
+    controlMeshPosition: Vector3;
+    controlMeshRotation: Vector3;
+    controlMeshWidth: number;
+  } {
     // What's the most we want a card to move to the left or right?
     const xOffset = Math.min(
       (totalCards / X_POS.maxOffsetAtThisManyCards) * X_POS.maxOffset,
@@ -207,35 +216,54 @@ export class CardRenderer {
     // How much should we tilt the card to the side?
     const rotateZ = funClamp(-1 * Z_ROT.max, Z_ROT.max, index, totalCards);
 
-    this.rootMesh.setParent(camera);
-    const targetPosition = new Vector3(x, Y_POS.base + yBoost, Z_POS.base);
-    if (immediately) {
-      this.rootMesh.position = targetPosition;
-    } else {
-      this.positionLerp = new V3Lerp(
-        this.rootMesh.position,
-        targetPosition,
-        10
-      );
-    }
-    this.rootMesh.rotation = new Vector3(
+    const position = new Vector3(x, Y_POS.base + yBoost, Z_POS.base);
+    const rotation = new Vector3(
       Tools.ToRadians(X_ROT.base),
       Tools.ToRadians(Y_ROT.base),
       Tools.ToRadians(rotateZ)
     );
 
+    const magicWidthBonus = 0.016;
+    const controlMeshWidth = ((xOffset + magicWidthBonus) * 2) / totalCards;
+    const controlMeshPosition = new Vector3(x, -0.05, 0.189);
+    const controlMeshRotation = new Vector3(Tools.ToRadians(10), 0, 0);
+
+    return {
+      position,
+      rotation,
+      controlMeshPosition,
+      controlMeshRotation,
+      controlMeshWidth,
+    };
+  }
+
+  putInFrontOfCamera(index: number, totalCards: number, immediately = false) {
+    // Update the index.
+    this.index = index;
+
+    const baseTransform = this.getBaseTransformation(index, totalCards);
+    console.log(baseTransform.position);
+
+    if (immediately) {
+      this.rootMesh.position = baseTransform.position;
+    } else {
+      this.positionLerp = new V3Lerp(
+        this.rootMesh.position,
+        baseTransform.position,
+        10
+      );
+    }
+    this.rootMesh.rotation = baseTransform.rotation;
+
     // Control mesh.
     this.controlMesh?.dispose();
 
-    // I found this number works well.
-    // TODO: Put control mesh magic numbers in variables.
-    const magicWidthBonus = 0.016;
-    const controlMeshWidth = ((xOffset + magicWidthBonus) * 2) / totalCards;
-
-    this.controlMesh = this.createControlPlaneMesh(controlMeshWidth);
-    this.controlMesh.setParent(camera);
-    this.controlMesh.position = new Vector3(x, -0.05, 0.189);
-    this.controlMesh.rotation = new Vector3(Tools.ToRadians(10), 0, 0);
+    this.controlMesh = this.createControlPlaneMesh(
+      baseTransform.controlMeshWidth
+    );
+    this.controlMesh.setParent(this.rootMesh.parent);
+    this.controlMesh.position = baseTransform.controlMeshPosition;
+    this.controlMesh.rotation = baseTransform.controlMeshRotation;
     // Register action handler on the new mesh.
     this.handleHover();
   }

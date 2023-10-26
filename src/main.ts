@@ -44,7 +44,7 @@ async function createStarterScene(app: App) {
 
   await GameGUI.createGameGUI();
 
-  const cardManager = new CardManager(camera);
+  const cardManager = new CardManager();
   cardManager.createDrawPile(20);
   await cardManager.drawCardsToHand(5);
   cardManager.renderHand();

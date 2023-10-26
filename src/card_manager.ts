@@ -1,4 +1,3 @@
-import { Camera } from "@babylonjs/core";
 import { Card } from "./card";
 import { getGameGUI } from "./gui";
 
@@ -13,7 +12,7 @@ export class CardManager {
   private hand: Card[] = [];
   private discardPile: Card[] = [];
 
-  constructor(private camera: Camera) {
+  constructor() {
     if (globalCardManager) throw new Error("Card manager already exists");
     globalCardManager = this;
   }
@@ -60,7 +59,6 @@ export class CardManager {
   renderHand() {
     for (let cardIndex = 0; cardIndex < this.hand.length; cardIndex++) {
       this.hand[cardIndex].renderer!.putInFrontOfCamera(
-        this.camera,
         cardIndex,
         this.hand.length
       );
