@@ -35,7 +35,7 @@ export class GameGUI {
 
     this.drawButton.onPointerUpObservable.add(async () => {
       await getCardManger().drawCardsToHand(1);
-      getCardManger().renderHand();
+      getCardManger().renderHand(25);
     });
   }
 

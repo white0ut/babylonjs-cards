@@ -55,6 +55,7 @@ export class CardRenderer {
     this.borderMesh.material = borderMaterial;
 
     this.rootMesh.setParent(scene.getCameraByName("camera1"));
+    this.rootMesh.position = new Vector3(X_POS.spawn, Y_POS.spawn, Z_POS.spawn);
 
     this.setUpRenderObservable();
   }
@@ -87,7 +88,10 @@ export class CardRenderer {
   private setState(state: CardRenderState) {
     if (this.state !== state) {
       this.state = state;
-      const targetPosition = this.rootMesh.position.clone();
+      let targetPosition = this.getBaseTransformation(
+        this.index,
+        getCardManger().getHandSize()
+      ).position;
       const borderMaterial = this.borderMesh.material as B.StandardMaterial;
       switch (state) {
         case CardRenderState.UNDEFINED:
@@ -121,7 +125,7 @@ export class CardRenderer {
         case CardRenderState.ELIGIBLE_TO_PLAY:
           this.borderMesh.isVisible = true;
           borderMaterial.emissiveColor = B.Color3.Green();
-          targetPosition.z = Z_POS.picked;
+          targetPosition.y = Y_POS.toPlay;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
@@ -237,22 +241,16 @@ export class CardRenderer {
     };
   }
 
-  putInFrontOfCamera(index: number, totalCards: number, immediately = false) {
+  putInFrontOfCamera(index: number, totalCards: number, duration = 10) {
     // Update the index.
     this.index = index;
 
     const baseTransform = this.getBaseTransformation(index, totalCards);
-    console.log(baseTransform.position);
-
-    if (immediately) {
-      this.rootMesh.position = baseTransform.position;
-    } else {
-      this.positionLerp = new V3Lerp(
-        this.rootMesh.position,
-        baseTransform.position,
-        10
-      );
-    }
+    this.positionLerp = new V3Lerp(
+      this.rootMesh.position,
+      baseTransform.position,
+      duration
+    );
     this.rootMesh.rotation = baseTransform.rotation;
 
     // Control mesh.
@@ -279,15 +277,19 @@ export class CardRenderer {
 const X_POS = {
   maxOffset: 0.1,
   maxOffsetAtThisManyCards: 6,
+  spawn: 0.2,
 };
 const Y_POS = {
   base: -0.07,
+  toPlay: -0.04,
   maxOffset: 0.01,
+  spawn: -0.1,
 };
 const Z_POS = {
   base: 0.2,
   hover: 0.19,
   picked: 0.18,
+  spawn: 0.1,
 };
 const X_ROT = {
   base: 190,

@@ -56,11 +56,12 @@ export class CardManager {
     this.renderHand();
   }
 
-  renderHand() {
+  renderHand(duration?: number) {
     for (let cardIndex = 0; cardIndex < this.hand.length; cardIndex++) {
       this.hand[cardIndex].renderer!.putInFrontOfCamera(
         cardIndex,
-        this.hand.length
+        this.hand.length,
+        duration
       );
     }
     const gui = getGameGUI();
@@ -91,6 +92,10 @@ export class CardManager {
         cards[currentIndex],
       ];
     }
+  }
+
+  getHandSize(): number {
+    return this.hand.length;
   }
 
   getDrawPileSize(): number {
