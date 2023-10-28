@@ -52,6 +52,8 @@ export class CardRenderer {
     const borderMaterial = new B.StandardMaterial("BorderMaterial", scene);
     borderMaterial.diffuseColor = B.Color3.Blue();
     borderMaterial.emissiveColor = B.Color3.Blue();
+    // Dispose the default material put in by the loader.
+    this.borderMesh.material?.dispose();
     this.borderMesh.material = borderMaterial;
 
     this.rootMesh.setParent(scene.getCameraByName("camera1"));
