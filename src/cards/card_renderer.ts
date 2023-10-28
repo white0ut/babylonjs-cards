@@ -4,7 +4,6 @@ import {
   Scene,
   SceneLoader,
   Vector3,
-  Tools,
   ActionManager,
   ExecuteCodeAction,
 } from "@babylonjs/core";
@@ -13,6 +12,7 @@ import { cardUrl } from "../asset_loader";
 import { getCardManger } from "./card_manager";
 import { getApp } from "../app";
 import { V3Lerp } from "../utils/v3_lerp";
+import { toRadians as v3ToRadians } from "../utils/v3_utils";
 
 enum CardRenderState {
   UNDEFINED,
@@ -38,6 +38,7 @@ export class CardRenderer {
   index = -1;
   state = CardRenderState.UNDEFINED;
   positionLerp: V3Lerp | null = null;
+  rotationLerp: V3Lerp | null = null;
 
   static async createCard(scene: Scene): Promise<CardRenderer> {
     const result = await SceneLoader.ImportMeshAsync("", cardUrl, "", scene);
@@ -62,6 +63,7 @@ export class CardRenderer {
 
     this.rootMesh.setParent(scene.getCameraByName("camera1"));
     this.rootMesh.position = new Vector3(X_POS.spawn, Y_POS.spawn, Z_POS.spawn);
+    this.rootMesh.rotation = v3ToRadians(X_ROT.spawn, Y_ROT.spawn, Z_ROT.spawn);
 
     this.setUpRenderObservable();
   }
@@ -88,6 +90,10 @@ export class CardRenderer {
       if (this.positionLerp) {
         this.rootMesh.position = this.positionLerp.next();
         if (this.positionLerp.done()) this.positionLerp = null;
+      }
+      if (this.rotationLerp) {
+        this.rootMesh.rotation = this.rotationLerp.next();
+        if (this.rotationLerp.done()) this.rotationLerp = null;
       }
     });
     this.rootMesh.onDisposeObservable.addOnce(() => beforeRender?.remove());
@@ -142,10 +148,20 @@ export class CardRenderer {
           break;
         case CardRenderState.PLAYING:
           this.borderMesh.isVisible = false;
-          targetPosition = new Vector3(0, 0, Z_POS.picked);
+          this.controlMesh?.dispose();
+          targetPosition = new Vector3(
+            X_POS.playing,
+            Y_POS.playing,
+            Z_POS.playing
+          );
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
+            10
+          );
+          this.rotationLerp = new V3Lerp(
+            this.rootMesh.rotation,
+            v3ToRadians(X_ROT.playing, Y_ROT.playing, Z_ROT.playing),
             10
           );
           break;
@@ -239,11 +255,7 @@ export class CardRenderer {
     const rotateZ = funClamp(-1 * Z_ROT.max, Z_ROT.max, index, totalCards);
 
     const position = new Vector3(x, Y_POS.base + yBoost, Z_POS.base);
-    const rotation = new Vector3(
-      Tools.ToRadians(X_ROT.base),
-      Tools.ToRadians(Y_ROT.base),
-      Tools.ToRadians(rotateZ)
-    );
+    const rotation = v3ToRadians(X_ROT.base, Y_ROT.base, rotateZ);
 
     const cardWidth = 0.032;
     const outerEdge = xOffset + cardWidth / 2;
@@ -257,7 +269,7 @@ export class CardRenderer {
       totalCards
     );
     const controlMeshPosition = new Vector3(controlMeshX, -0.05, 0.189);
-    const controlMeshRotation = new Vector3(Tools.ToRadians(10), 0, 0);
+    const controlMeshRotation = v3ToRadians(10, 0, 0);
 
     return {
       position,
@@ -278,7 +290,11 @@ export class CardRenderer {
       baseTransform.position,
       duration
     );
-    this.rootMesh.rotation = baseTransform.rotation;
+    this.rotationLerp = new V3Lerp(
+      this.rootMesh.rotation,
+      baseTransform.rotation,
+      duration
+    );
 
     // Control mesh.
     if (!this.controlMesh) {
@@ -306,27 +322,36 @@ const X_POS = {
   maxOffset: 0.1,
   maxOffsetAtThisManyCards: 6,
   spawn: 0.2,
+  playing: 0,
 };
 const Y_POS = {
   base: -0.07,
   toPlay: -0.04,
   maxOffset: 0.01,
   spawn: -0.1,
+  playing: 0,
 };
 const Z_POS = {
   base: 0.2,
   hover: 0.19,
   picked: 0.18,
   spawn: 0.1,
+  playing: 0.18,
 };
 const X_ROT = {
   base: 190,
+  playing: 180,
+  spawn: 80,
 };
 const Y_ROT = {
   base: 2,
+  playing: 0,
+  spawn: 0,
 };
 const Z_ROT = {
   max: 5,
+  playing: 0,
+  spawn: 0,
 };
 
 /**
