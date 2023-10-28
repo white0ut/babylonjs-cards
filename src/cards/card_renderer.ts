@@ -22,7 +22,7 @@ enum CardRenderState {
 }
 
 // Useful for debugging control mesh transforms.
-const SHOW_CONTROL_MESHES = false;
+const SHOW_CONTROL_MESHES = true;
 
 export class CardRenderer {
   /** The root mesh for positioning. */
@@ -234,8 +234,8 @@ export class CardRenderer {
       Tools.ToRadians(rotateZ)
     );
 
-    const magicWidthBonus = 0.016;
-    const controlMeshWidth = ((xOffset + magicWidthBonus) * 2) / totalCards;
+    const distanceToCover = xOffset * 2;
+    const controlMeshWidth = distanceToCover / Math.max(totalCards - 1, 0.5);
     const controlMeshPosition = new Vector3(x, -0.05, 0.189);
     const controlMeshRotation = new Vector3(Tools.ToRadians(10), 0, 0);
 
