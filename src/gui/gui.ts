@@ -8,6 +8,7 @@ export class GameGUI {
   private readonly drawPileLabel: GUI.TextBlock;
   private readonly discardPileLabel: GUI.TextBlock;
   private readonly drawButton: GUI.Button;
+  private readonly discardHandButton: GUI.Button;
 
   static async createGameGUI(): Promise<GameGUI> {
     const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI(
@@ -15,7 +16,7 @@ export class GameGUI {
       true,
       getApp().scene
     );
-    await advancedTexture.parseFromSnippetAsync("KHNI6A#3");
+    await advancedTexture.parseFromSnippetAsync("KHNI6A#4");
 
     return new GameGUI(advancedTexture);
   }
@@ -32,10 +33,16 @@ export class GameGUI {
       "DiscardPileLabel"
     ) as GUI.TextBlock;
     this.drawButton = container.getChildByName("DrawButton") as GUI.Button;
+    this.discardHandButton = container.getChildByName(
+      "DiscardHandButton"
+    ) as GUI.Button;
 
     this.drawButton.onPointerUpObservable.add(async () => {
       await getCardManger().drawCardsToHand(1);
       getCardManger().renderHand(25);
+    });
+    this.discardHandButton.onPointerUpObservable.add(async () => {
+      await getCardManger().discardHand();
     });
   }
 

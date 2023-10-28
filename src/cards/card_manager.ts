@@ -1,5 +1,6 @@
 import { Card } from "./card";
 import { getGameGUI } from "../gui/gui";
+import { Tools } from "@babylonjs/core";
 
 let globalCardManager: CardManager | null = null;
 
@@ -54,6 +55,13 @@ export class CardManager {
     discardedCard.dispose();
     this.discardPile.push(discardedCard);
     this.renderHand();
+  }
+
+  async discardHand() {
+    while (this.getHandSize()) {
+      this.discardCardFromHand(0);
+      await Tools.DelayAsync(50);
+    }
   }
 
   renderHand(duration?: number) {
