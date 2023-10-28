@@ -42,7 +42,9 @@ export class GameGUI {
       getCardManger().renderHand(25);
     });
     this.discardHandButton.onPointerUpObservable.add(async () => {
+      this.drawButton.isEnabled = false;
       await getCardManger().discardHand();
+      this.drawButton.isEnabled = true;
     });
   }
 
