@@ -21,6 +21,9 @@ enum CardRenderState {
   ELIGIBLE_TO_PLAY,
 }
 
+// Useful for debugging control mesh transforms.
+const SHOW_CONTROL_MESHES = false;
+
 export class CardRenderer {
   /** The root mesh for positioning. */
   readonly rootMesh: AbstractMesh;
@@ -66,12 +69,14 @@ export class CardRenderer {
     const plane = B.CreatePlane(
       "control-plane",
       {
-        width,
+        width: 1,
         height: 0.06,
       },
       this.scene
     );
-    plane.visibility = 0;
+    plane.scaling.x = width;
+    plane.showBoundingBox = true;
+    plane.visibility = SHOW_CONTROL_MESHES ? 0.1 : 0;
 
     this.rootMesh.onDisposeObservable.addOnce(() => plane.dispose());
     return plane;
@@ -256,14 +261,15 @@ export class CardRenderer {
     this.rootMesh.rotation = baseTransform.rotation;
 
     // Control mesh.
-    this.controlMesh?.dispose();
-
-    this.controlMesh = this.createControlPlaneMesh(
-      baseTransform.controlMeshWidth
-    );
-    this.controlMesh.setParent(this.rootMesh.parent);
+    if (!this.controlMesh) {
+      this.controlMesh = this.createControlPlaneMesh(
+        baseTransform.controlMeshWidth
+      );
+      this.controlMesh.setParent(this.rootMesh.parent);
+    }
     this.controlMesh.position = baseTransform.controlMeshPosition;
     this.controlMesh.rotation = baseTransform.controlMeshRotation;
+    this.controlMesh.scaling.x = baseTransform.controlMeshWidth;
     // Register action handler on the new mesh.
     this.handleHover();
   }
