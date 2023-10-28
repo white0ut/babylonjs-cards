@@ -19,6 +19,7 @@ enum CardRenderState {
   HOVER,
   PICKED,
   ELIGIBLE_TO_PLAY,
+  PLAYING,
 }
 
 // Useful for debugging control mesh transforms.
@@ -139,6 +140,15 @@ export class CardRenderer {
             10
           );
           break;
+        case CardRenderState.PLAYING:
+          this.borderMesh.isVisible = false;
+          targetPosition = new Vector3(0, 0, Z_POS.picked);
+          this.positionLerp = new V3Lerp(
+            this.rootMesh.position,
+            targetPosition,
+            10
+          );
+          break;
       }
     }
   }
@@ -186,7 +196,8 @@ export class CardRenderer {
               this.cardMesh.renderOutline = false;
               this.setState(CardRenderState.UNDEFINED);
               if (ev.offsetY < canvasElement.height / 2) {
-                getCardManger().discardCardFromHand(this.index);
+                this.setState(CardRenderState.PLAYING);
+                getCardManger().playCardFromhand(this.index);
               }
             },
             { once: true }

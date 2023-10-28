@@ -50,6 +50,15 @@ export class CardManager {
     return Promise.all(draws);
   }
 
+  async playCardFromhand(index: number) {
+    const playedCard = this.hand.splice(index, 1)[0];
+    this.renderHand();
+    await playedCard.play();
+    playedCard.dispose();
+    this.discardPile.push(playedCard);
+    this.updateGui();
+  }
+
   discardCardFromHand(index: number) {
     const discardedCard = this.hand.splice(index, 1)[0];
     discardedCard.dispose();
@@ -72,6 +81,10 @@ export class CardManager {
         duration
       );
     }
+    this.updateGui();
+  }
+
+  updateGui() {
     const gui = getGameGUI();
     gui.updateDrawPile(this.drawPile.length);
     gui.updateDiscardPile(this.discardPile.length);
