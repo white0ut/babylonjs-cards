@@ -1,4 +1,5 @@
 import { Engine, Scene, ActionManager } from "@babylonjs/core";
+import { Inspector } from "@babylonjs/inspector";
 
 let globalApp: App | null = null;
 
@@ -15,6 +16,16 @@ export class App {
     this.scene = new Scene(this.engine);
     this.scene.actionManager = new ActionManager();
     globalApp = this;
+
+    document.body.addEventListener("keyup", (ev: KeyboardEvent) => {
+      if (ev.key === "`") {
+        if (!Inspector.IsVisible) {
+          Inspector.Show(this.scene, { embedMode: true });
+        } else {
+          Inspector.Hide();
+        }
+      }
+    });
   }
 
   start() {

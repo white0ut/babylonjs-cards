@@ -1,4 +1,4 @@
-# Vite BabylonJS TypeScript Template
+# 3D Cards
 
 ## Set up
 
@@ -6,3 +6,7 @@
 npm install
 npm run dev
 ```
+
+## Notes
+
+Press `\`` to toggle the BabylonJS inspector.
