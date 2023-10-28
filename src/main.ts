@@ -2,8 +2,8 @@ import "./style.css";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { App } from "./app";
-import { CardManager } from "./card_manager";
-import { GameGUI } from "./gui";
+import { CardManager } from "./cards/card_manager";
+import { GameGUI } from "./gui/gui";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera

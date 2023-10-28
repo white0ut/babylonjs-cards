@@ -1,5 +1,5 @@
 import { CardRenderer } from "./card_renderer";
-import { getApp } from "./app";
+import { getApp } from "../app";
 
 export class Card {
   renderer: CardRenderer | null = null;

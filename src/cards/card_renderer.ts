@@ -9,10 +9,10 @@ import {
   ExecuteCodeAction,
 } from "@babylonjs/core";
 import * as B from "@babylonjs/core";
-import { cardUrl } from "./asset_loader";
+import { cardUrl } from "../asset_loader";
 import { getCardManger } from "./card_manager";
-import { getApp } from "./app";
-import { V3Lerp } from "./utils/v3_lerp";
+import { getApp } from "../app";
+import { V3Lerp } from "../utils/v3_lerp";
 
 enum CardRenderState {
   UNDEFINED,

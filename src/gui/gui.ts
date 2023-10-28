@@ -1,6 +1,6 @@
 import * as GUI from "@babylonjs/gui";
-import { getApp } from "./app";
-import { getCardManger } from "./card_manager";
+import { getApp } from "../app";
+import { getCardManger } from "../cards/card_manager";
 
 let globalGameGui: GameGUI | null = null;
 

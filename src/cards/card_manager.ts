@@ -1,5 +1,5 @@
 import { Card } from "./card";
-import { getGameGUI } from "./gui";
+import { getGameGUI } from "../gui/gui";
 
 let globalCardManager: CardManager | null = null;
 
