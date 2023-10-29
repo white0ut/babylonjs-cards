@@ -9,4 +9,12 @@ npm run dev
 
 ## Notes
 
-Press `\`` to toggle the BabylonJS inspector.
+### BabylonJS Inspector
+
+Press ` to toggle the BabylonJS inspector.
+
+### Card Illustrations
+
+Probably a good idea to keep illustration sizes under 200 KiB.
+
+720x428 seems to look good.

@@ -5,24 +5,33 @@ import {
   CardTextureGenerator,
   CardTextureGeneratorOptions,
 } from "./card_texture_generator";
+import { loadImage } from "../utils/img_utils";
 
 export interface CardOptions {
   title: string;
   description: string;
+  illustrationUrl?: string;
 }
 
 export abstract class Card {
   renderer: CardRenderer | null = null;
   title: string;
   description: string;
+  illustrationUrl: string | undefined;
   private textureGenerator: CardTextureGenerator | null = null;
+  private imageElement: HTMLImageElement | null = null;
+  static illustrations = new Map<string, Promise<HTMLImageElement>>();
 
   constructor(options: CardOptions) {
     this.title = options.title;
     this.description = options.description;
+    this.illustrationUrl = options.illustrationUrl;
   }
 
   async initializeRenderer() {
+    if (this.illustrationUrl) {
+      await this.loadIllustration();
+    }
     this.renderer = await CardRenderer.createCard(
       getApp().scene,
       this.getTextureGenerator()
@@ -48,7 +57,22 @@ export abstract class Card {
     return {
       title: this.title,
       description: this.description,
+      img: this.imageElement ?? undefined,
     };
+  }
+
+  /** Grab the image if it already exists, or create it. */
+  async loadIllustration(): Promise<HTMLImageElement> {
+    const existing = Card.illustrations.get(this.title);
+    if (existing) {
+      this.imageElement = await existing;
+      return existing;
+    } else {
+      const load = loadImage(this.illustrationUrl!);
+      Card.illustrations.set(this.title, load);
+      this.imageElement = await load;
+      return load;
+    }
   }
 
   dispose() {

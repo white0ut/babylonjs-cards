@@ -1,22 +1,7 @@
 import * as B from "@babylonjs/core";
 import { wrapText } from "../utils/canvas_utils";
 import { cardTextureSvg } from "../asset_loader";
-
-function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((res, _rej) => {
-    const img = new Image();
-    img.src = url;
-    img.addEventListener(
-      "load",
-      () => {
-        res(img);
-      },
-      {
-        once: true,
-      }
-    );
-  });
-}
+import { loadImage } from "../utils/img_utils";
 
 export interface CardTextureGeneratorOptions {
   title: string;
@@ -25,6 +10,7 @@ export interface CardTextureGeneratorOptions {
     c1: string;
     c2: string;
   };
+  img?: HTMLImageElement;
 }
 
 export class CardTextureGenerator {
@@ -90,17 +76,21 @@ export class CardTextureGenerator {
     const w = 1850;
     const h = 1100;
 
-    const gradient = this.ctx.createLinearGradient(2000, 1800, 3850, 3000);
-    gradient.addColorStop(0, "#000");
-    gradient.addColorStop(0.33, this.options.tempGradient?.c1 ?? "#ff0");
-    gradient.addColorStop(0.5, this.options.tempGradient?.c2 ?? "#fa0");
-    gradient.addColorStop(0.67, this.options.tempGradient?.c1 ?? "#ff0");
-    gradient.addColorStop(1, "#000");
+    if (this.options.img) {
+      this.ctx.drawImage(this.options.img, x, y, w, h);
+    } else {
+      const gradient = this.ctx.createLinearGradient(2000, 1800, 3850, 3000);
+      gradient.addColorStop(0, "#000");
+      gradient.addColorStop(0.33, this.options.tempGradient?.c1 ?? "#ff0");
+      gradient.addColorStop(0.5, this.options.tempGradient?.c2 ?? "#fa0");
+      gradient.addColorStop(0.67, this.options.tempGradient?.c1 ?? "#ff0");
+      gradient.addColorStop(1, "#000");
 
-    this.ctx.fillStyle = gradient;
+      this.ctx.fillStyle = gradient;
 
-    this.ctx.roundRect(x, y, w, h, 100);
-    this.ctx.fill();
+      this.ctx.roundRect(x, y, w, h, 100);
+      this.ctx.fill();
+    }
   }
 
   private async drawBaseTexture() {

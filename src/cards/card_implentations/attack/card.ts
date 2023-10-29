@@ -1,3 +1,4 @@
+import { attackCardIllustrationUrl } from "../../../asset_loader";
 import { Card } from "../../card";
 
 export class AttackCard extends Card {
@@ -5,6 +6,7 @@ export class AttackCard extends Card {
     super({
       title: "Attack",
       description: "Deal 6 damage",
+      illustrationUrl: attackCardIllustrationUrl,
     });
   }
 }
