@@ -73,6 +73,7 @@ export class CardRenderer {
   private async loadDynamicTexture() {
     const textureGenerator = new CardTextureGenerator(this.scene);
     const material = this.cardMesh.material as B.PBRMaterial;
+    material.albedoTexture?.dispose();
     material.albedoTexture = textureGenerator.getTexture();
   }
 
