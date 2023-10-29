@@ -352,7 +352,7 @@ const X_ROT = {
   spawn: 80,
 };
 const Y_ROT = {
-  base: 2,
+  base: -2,
   playing: 0,
   spawn: 0,
 };
