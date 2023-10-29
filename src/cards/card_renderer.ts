@@ -24,7 +24,7 @@ enum CardRenderState {
 }
 
 // Useful for debugging control mesh transforms.
-const SHOW_CONTROL_MESHES = true;
+const SHOW_CONTROL_MESHES = false;
 
 export class CardRenderer {
   /** The root mesh for positioning. */

@@ -32,6 +32,9 @@ export class App {
     this.engine.runRenderLoop(() => {
       this.scene.render();
     });
+    window.addEventListener("resize", () => {
+      this.engine.resize();
+    });
   }
 }
 
