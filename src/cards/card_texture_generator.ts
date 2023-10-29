@@ -18,12 +18,20 @@ function loadImage(url: string): Promise<HTMLImageElement> {
   });
 }
 
+export interface CardTextureGeneratorOptions {
+  title: string;
+  description: string;
+}
+
 export class CardTextureGenerator {
   private readonly texture: B.DynamicTexture;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly invertY = false;
 
-  constructor(scene: B.Scene) {
+  constructor(
+    scene: B.Scene,
+    private readonly options: CardTextureGeneratorOptions
+  ) {
     const canvas = document.createElement("canvas") as HTMLCanvasElement;
     canvas.width = 4096;
     canvas.height = 4096;
@@ -35,9 +43,9 @@ export class CardTextureGenerator {
 
   async drawAllTheThings(): Promise<void> {
     await this.drawBaseTexture();
-    this.drawTitle("Attack");
+    this.drawTitle(this.options.title);
     this.drawIllustration();
-    this.drawDescription("Deal 6 damage");
+    this.drawDescription(this.options.description);
     this.update();
   }
 

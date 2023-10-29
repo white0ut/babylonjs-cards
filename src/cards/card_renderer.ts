@@ -13,7 +13,10 @@ import { getCardManger } from "./card_manager";
 import { getApp } from "../app";
 import { V3Lerp } from "../utils/v3_lerp";
 import { toRadians as v3ToRadians } from "../utils/v3_utils";
-import { CardTextureGenerator } from "./card_texture_generator";
+import {
+  CardTextureGenerator,
+  CardTextureGeneratorOptions,
+} from "./card_texture_generator";
 
 enum CardRenderState {
   UNDEFINED,
@@ -41,12 +44,19 @@ export class CardRenderer {
   positionLerp: V3Lerp | null = null;
   rotationLerp: V3Lerp | null = null;
 
-  static async createCard(scene: Scene): Promise<CardRenderer> {
+  static async createCard(
+    scene: Scene,
+    options: CardTextureGeneratorOptions
+  ): Promise<CardRenderer> {
     const result = await SceneLoader.ImportMeshAsync("", cardUrl, "", scene);
-    return new CardRenderer(result, scene);
+    return new CardRenderer(result, scene, options);
   }
 
-  constructor(result: ISceneLoaderAsyncResult, scene: Scene) {
+  constructor(
+    result: ISceneLoaderAsyncResult,
+    scene: Scene,
+    private readonly textureGeneratorOptions: CardTextureGeneratorOptions
+  ) {
     const meshes = result.meshes;
     this.rootMesh = meshes[0];
     // Not sure why these indices seem backwards.
@@ -71,7 +81,10 @@ export class CardRenderer {
   }
 
   private async loadDynamicTexture() {
-    const textureGenerator = new CardTextureGenerator(this.scene);
+    const textureGenerator = new CardTextureGenerator(
+      this.scene,
+      this.textureGeneratorOptions
+    );
     const material = this.cardMesh.material as B.PBRMaterial;
     material.albedoTexture?.dispose();
     material.albedoTexture = textureGenerator.getTexture();

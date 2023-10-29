@@ -1,6 +1,7 @@
 import { Card } from "./card";
 import { getGameGUI } from "../gui/gui";
 import { Tools } from "@babylonjs/core";
+import { AttackCard } from "./card_implentations/attack/card";
 
 let globalCardManager: CardManager | null = null;
 
@@ -20,7 +21,7 @@ export class CardManager {
 
   createDrawPile(count: number) {
     for (let i = 0; i < count; i++) {
-      this.drawPile.push(new Card());
+      this.drawPile.push(new AttackCard());
     }
   }
 
