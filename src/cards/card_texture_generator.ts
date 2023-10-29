@@ -77,7 +77,18 @@ export class CardTextureGenerator {
     const h = 1100;
 
     if (this.options.img) {
+      // Save the current clip path.
+      this.ctx.save();
+
+      // Set the clip path to the round rectangle.
+      this.ctx.roundRect(x, y, w, h, 100);
+      this.ctx.clip();
+
+      // Draw the image.
       this.ctx.drawImage(this.options.img, x, y, w, h);
+
+      // Restore the original clip path.
+      this.ctx.restore();
     } else {
       const gradient = this.ctx.createLinearGradient(2000, 1800, 3850, 3000);
       gradient.addColorStop(0, "#000");
