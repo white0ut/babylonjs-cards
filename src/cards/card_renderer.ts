@@ -24,7 +24,7 @@ enum CardRenderState {
 }
 
 // Useful for debugging control mesh transforms.
-const SHOW_CONTROL_MESHES = false;
+const SHOW_CONTROL_MESHES = true;
 
 export class CardRenderer {
   /** The root mesh for positioning. */
@@ -128,6 +128,7 @@ export class CardRenderer {
         case CardRenderState.HOVER:
           this.borderMesh.isVisible = false;
           targetPosition.z = Z_POS.hover;
+          targetPosition.y = Y_POS.hover;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
@@ -138,6 +139,7 @@ export class CardRenderer {
           this.borderMesh.isVisible = true;
           borderMaterial.emissiveColor = B.Color3.Blue();
           targetPosition.z = Z_POS.picked;
+          targetPosition.y = Y_POS.picked;
           this.positionLerp = new V3Lerp(
             this.rootMesh.position,
             targetPosition,
@@ -265,7 +267,7 @@ export class CardRenderer {
     const position = new Vector3(x, Y_POS.base + yBoost, Z_POS.base);
     const rotation = v3ToRadians(X_ROT.base, Y_ROT.base, rotateZ);
 
-    const cardWidth = 0.032;
+    const cardWidth = 0.022;
     const outerEdge = xOffset + cardWidth / 2;
     const distanceToCover = outerEdge * 2;
     const controlMeshWidth = distanceToCover / totalCards;
@@ -334,15 +336,17 @@ const X_POS = {
 };
 const Y_POS = {
   base: -0.07,
+  hover: -0.055,
+  picked: -0.055,
   toPlay: -0.04,
   maxOffset: 0.01,
   spawn: -0.1,
   playing: 0,
 };
 const Z_POS = {
-  base: 0.2,
-  hover: 0.19,
-  picked: 0.18,
+  base: 0.25,
+  hover: 0.24,
+  picked: 0.23,
   spawn: 0.1,
   playing: 0.18,
 };
