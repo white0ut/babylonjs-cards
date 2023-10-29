@@ -13,6 +13,7 @@ import { getCardManger } from "./card_manager";
 import { getApp } from "../app";
 import { V3Lerp } from "../utils/v3_lerp";
 import { toRadians as v3ToRadians } from "../utils/v3_utils";
+import { CardTextureGenerator } from "./card_texture_generator";
 
 enum CardRenderState {
   UNDEFINED,
@@ -66,6 +67,13 @@ export class CardRenderer {
     this.rootMesh.rotation = v3ToRadians(X_ROT.spawn, Y_ROT.spawn, Z_ROT.spawn);
 
     this.setUpRenderObservable();
+    this.loadDynamicTexture();
+  }
+
+  private async loadDynamicTexture() {
+    const textureGenerator = new CardTextureGenerator(this.scene);
+    const material = this.cardMesh.material as B.PBRMaterial;
+    material.albedoTexture = textureGenerator.getTexture();
   }
 
   private createControlPlaneMesh(width: number): B.Mesh {
