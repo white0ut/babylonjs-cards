@@ -4,6 +4,9 @@ import "@babylonjs/loaders/glTF";
 import { App } from "./app";
 import { CardManager } from "./cards/card_manager";
 import { GameGUI } from "./gui/gui";
+import { AttackCard } from "./cards/card_implentations/attack/card";
+import { DefendCard } from "./cards/card_implentations/defend/card";
+import { Card } from "./cards/card";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera
@@ -45,7 +48,12 @@ async function createStarterScene(app: App) {
   await GameGUI.createGameGUI();
 
   const cardManager = new CardManager();
-  cardManager.createDrawPile(20);
+  const starterDeck: Card[] = [];
+  for (let i = 0; i < 10; i++) {
+    starterDeck.push(new AttackCard());
+    starterDeck.push(new DefendCard());
+  }
+  cardManager.createDrawPile(starterDeck);
   await cardManager.drawCardsToHand(5);
   cardManager.renderHand();
 }
