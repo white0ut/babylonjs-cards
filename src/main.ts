@@ -7,6 +7,7 @@ import { GameGUI } from "./gui/gui";
 import { AttackCard } from "./cards/card_implentations/attack/card";
 import { DefendCard } from "./cards/card_implentations/defend/card";
 import { Card } from "./cards/card";
+import { Character } from "./characters/character";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera
@@ -28,22 +29,17 @@ async function createStarterScene(app: App) {
   );
   // Dim the light a small amount 0 - 1
   light.intensity = 0.7;
-  // Built-in 'sphere' shape.
-  const sphere = BABYLON.MeshBuilder.CreateSphere(
-    "sphere",
-    { diameter: 2, segments: 32 },
-    app.scene
-  );
-  // Move sphere upward 1/2 its height
-  sphere.position.y = 1;
-  // Move the sphere over
-  sphere.position.x = -1.5;
+
   // Built-in 'ground' shape.
   BABYLON.MeshBuilder.CreateGround(
     "ground",
     { width: 6, height: 6 },
     app.scene
   );
+
+  // Create a character.
+  const enemy = new Character(25);
+  await enemy.initializeRenderer();
 
   await GameGUI.createGameGUI();
 
