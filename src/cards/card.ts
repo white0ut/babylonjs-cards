@@ -1,7 +1,10 @@
 import { CardRenderer } from "./card_renderer";
 import { getApp } from "../app";
 import { Tools } from "@babylonjs/core";
-import { CardTextureGenerator } from "./card_texture_generator";
+import {
+  CardTextureGenerator,
+  CardTextureGeneratorOptions,
+} from "./card_texture_generator";
 
 export interface CardOptions {
   title: string;
@@ -33,12 +36,19 @@ export abstract class Card {
 
   getTextureGenerator(): CardTextureGenerator {
     if (!this.textureGenerator) {
-      this.textureGenerator = new CardTextureGenerator(getApp().scene, {
-        title: this.title,
-        description: this.description,
-      });
+      this.textureGenerator = new CardTextureGenerator(
+        getApp().scene,
+        this.getTextureGeneratorOptions()
+      );
     }
     return this.textureGenerator;
+  }
+
+  getTextureGeneratorOptions(): CardTextureGeneratorOptions {
+    return {
+      title: this.title,
+      description: this.description,
+    };
   }
 
   dispose() {

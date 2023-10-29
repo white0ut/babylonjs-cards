@@ -21,6 +21,10 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 export interface CardTextureGeneratorOptions {
   title: string;
   description: string;
+  tempGradient?: {
+    c1: string;
+    c2: string;
+  };
 }
 
 export class CardTextureGenerator {
@@ -88,9 +92,9 @@ export class CardTextureGenerator {
 
     const gradient = this.ctx.createLinearGradient(2000, 1800, 3850, 3000);
     gradient.addColorStop(0, "#000");
-    gradient.addColorStop(0.33, "#ff0");
-    gradient.addColorStop(0.5, "#fa0");
-    gradient.addColorStop(0.67, "#ff0");
+    gradient.addColorStop(0.33, this.options.tempGradient?.c1 ?? "#ff0");
+    gradient.addColorStop(0.5, this.options.tempGradient?.c2 ?? "#fa0");
+    gradient.addColorStop(0.67, this.options.tempGradient?.c1 ?? "#ff0");
     gradient.addColorStop(1, "#000");
 
     this.ctx.fillStyle = gradient;
