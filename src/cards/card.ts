@@ -1,6 +1,7 @@
 import { CardRenderer } from "./card_renderer";
 import { getApp } from "../app";
 import { Tools } from "@babylonjs/core";
+import { CardTextureGenerator } from "./card_texture_generator";
 
 export interface CardOptions {
   title: string;
@@ -11,6 +12,7 @@ export abstract class Card {
   renderer: CardRenderer | null = null;
   title: string;
   description: string;
+  private textureGenerator: CardTextureGenerator | null = null;
 
   constructor(options: CardOptions) {
     this.title = options.title;
@@ -18,10 +20,10 @@ export abstract class Card {
   }
 
   async initializeRenderer() {
-    this.renderer = await CardRenderer.createCard(getApp().scene, {
-      title: this.title,
-      description: this.description,
-    });
+    this.renderer = await CardRenderer.createCard(
+      getApp().scene,
+      this.getTextureGenerator()
+    );
   }
 
   async play(): Promise<void> {
@@ -29,8 +31,19 @@ export abstract class Card {
     await Tools.DelayAsync(500);
   }
 
+  getTextureGenerator(): CardTextureGenerator {
+    if (!this.textureGenerator) {
+      this.textureGenerator = new CardTextureGenerator(getApp().scene, {
+        title: this.title,
+        description: this.description,
+      });
+    }
+    return this.textureGenerator;
+  }
+
   dispose() {
     this.renderer?.dispose();
     this.renderer = null;
+    this.textureGenerator = null;
   }
 }

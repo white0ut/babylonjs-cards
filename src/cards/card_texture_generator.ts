@@ -28,6 +28,8 @@ export class CardTextureGenerator {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly invertY = false;
 
+  private static baseTextureImageElementPromise = loadImage(cardTextureSvg);
+
   constructor(
     scene: B.Scene,
     private readonly options: CardTextureGeneratorOptions
@@ -98,7 +100,7 @@ export class CardTextureGenerator {
   }
 
   private async drawBaseTexture() {
-    const img = await loadImage(cardTextureSvg);
+    const img = await CardTextureGenerator.baseTextureImageElementPromise;
     this.ctx.drawImage(img, 0, 0, 4096, 4096);
     this.update();
   }
