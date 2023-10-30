@@ -1,10 +1,12 @@
 import * as B from "@babylonjs/core";
 import { getApp } from "../app";
+import { CharacterGUI } from "./character_gui";
 
 export class CharacterRenderer {
   rootMesh: B.AbstractMesh;
   controlMesh: B.AbstractMesh;
   guiMesh: B.AbstractMesh;
+  gui: CharacterGUI;
 
   static createRenderer(): Promise<CharacterRenderer> {
     return Promise.resolve(new CharacterRenderer());
@@ -23,6 +25,7 @@ export class CharacterRenderer {
     this.rootMesh = mesh;
     this.controlMesh = mesh;
     this.guiMesh = this.createGuiMesh();
+    this.gui = new CharacterGUI(this.guiMesh, 10, 10);
 
     this.setInitialTransform();
   }
