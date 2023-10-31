@@ -7,6 +7,7 @@ let globalGameGui: GameGUI | null = null;
 export class GameGUI {
   private readonly drawPileLabel: GUI.TextBlock;
   private readonly discardPileLabel: GUI.TextBlock;
+  private readonly manaLabel: GUI.TextBlock;
   private readonly drawButton: GUI.Button;
   private readonly discardHandButton: GUI.Button;
 
@@ -16,7 +17,7 @@ export class GameGUI {
       true,
       getApp().scene
     );
-    await advancedTexture.parseFromSnippetAsync("KHNI6A#4");
+    await advancedTexture.parseFromSnippetAsync("KHNI6A#5");
 
     return new GameGUI(advancedTexture);
   }
@@ -32,6 +33,7 @@ export class GameGUI {
     this.discardPileLabel = container.getChildByName(
       "DiscardPileLabel"
     ) as GUI.TextBlock;
+    this.manaLabel = container.getChildByName("ManaLabel") as GUI.TextBlock;
     this.drawButton = container.getChildByName("DrawButton") as GUI.Button;
     this.discardHandButton = container.getChildByName(
       "DiscardHandButton"
@@ -54,6 +56,11 @@ export class GameGUI {
 
   updateDiscardPile(count: number) {
     this.discardPileLabel.text = `Discard pile: ${count}`;
+  }
+
+  // TODO: mana label is off the screen.
+  updateMana(count: number) {
+    this.manaLabel.text = `Mana: ${count}`;
   }
 }
 

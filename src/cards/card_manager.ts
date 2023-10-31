@@ -66,8 +66,8 @@ export class CardManager {
     this.state = CardManagerState.PLAYING_CARD;
     const playedCard = this.hand.splice(index, 1)[0];
     this.renderHand();
+    this.player.spendMana(playedCard.manaCost);
     await playedCard.play();
-    this.player.mana -= playedCard.manaCost;
     playedCard.dispose();
     this.discardPile.push(playedCard);
     this.updateGui();

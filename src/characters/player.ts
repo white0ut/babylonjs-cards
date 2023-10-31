@@ -1,5 +1,6 @@
 import { Card } from "../cards/card";
 import { CardManager } from "../cards/card_manager";
+import { getGameGUI } from "../gui/gui";
 import { Character } from "./character";
 
 export class Player extends Character {
@@ -13,6 +14,16 @@ export class Player extends Character {
     this.mana = maxMana;
     this.cardManager = new CardManager(this);
     this.cardManager.createDrawPile(deck);
+  }
+
+  initializeRenderer(): Promise<void> {
+    getGameGUI().updateMana(this.mana);
+    return super.initializeRenderer();
+  }
+
+  spendMana(manaCost: number) {
+    this.mana -= manaCost;
+    getGameGUI().updateMana(this.mana);
   }
 
   async takeTurn(): Promise<void> {

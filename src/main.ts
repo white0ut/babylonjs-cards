@@ -2,7 +2,6 @@ import "./style.css";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { App } from "./app";
-import { GameGUI } from "./gui/gui";
 import { AttackCard } from "./cards/card_implentations/attack/card";
 import { DefendCard } from "./cards/card_implentations/defend/card";
 import { Card } from "./cards/card";
@@ -47,9 +46,6 @@ async function createStarterScene(app: App) {
   const player = new Player(3, starterDeck);
   const battle = new Battle([player], [new Character(25, 10)]);
   await battle.render();
-
-  await GameGUI.createGameGUI();
-
   await battle.startNextTurn();
 }
 
