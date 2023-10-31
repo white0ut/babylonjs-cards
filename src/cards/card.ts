@@ -19,6 +19,7 @@ export abstract class Card {
   title: string;
   description: string;
   illustrationUrl: string | undefined;
+  manaCost: number;
   private textureGenerator: CardTextureGenerator | null = null;
   private imageElement: HTMLImageElement | null = null;
   static illustrations = new Map<string, Promise<HTMLImageElement>>();
@@ -27,6 +28,7 @@ export abstract class Card {
     this.title = options.title;
     this.description = options.description;
     this.illustrationUrl = options.illustrationUrl;
+    this.manaCost = options.manaCost;
   }
 
   async initializeRenderer() {

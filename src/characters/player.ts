@@ -11,7 +11,7 @@ export class Player extends Character {
     super(50, 0);
     this.maxMana = maxMana;
     this.mana = maxMana;
-    this.cardManager = new CardManager();
+    this.cardManager = new CardManager(this);
     this.cardManager.createDrawPile(deck);
   }
 

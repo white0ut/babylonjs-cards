@@ -212,7 +212,10 @@ export class CardRenderer {
           canvasElement.addEventListener(
             "pointermove",
             (ev: MouseEvent) => {
-              if (ev.offsetY < canvasElement.height / 2) {
+              if (
+                ev.offsetY < canvasElement.height / 2 &&
+                getCardManger().canPlayCardFromHand(this.index)
+              ) {
                 this.setState(CardRenderState.ELIGIBLE_TO_PLAY);
               } else {
                 this.setState(CardRenderState.PICKED);
@@ -224,13 +227,14 @@ export class CardRenderer {
           );
           canvasElement.addEventListener(
             "pointerup",
-            (ev: MouseEvent) => {
+            () => {
               pointerMoveAbortController.abort();
               this.cardMesh.renderOutline = false;
-              this.setState(CardRenderState.UNDEFINED);
-              if (ev.offsetY < canvasElement.height / 2) {
+              if (this.state === CardRenderState.ELIGIBLE_TO_PLAY) {
                 this.setState(CardRenderState.PLAYING);
                 getCardManger().playCardFromhand(this.index);
+              } else {
+                this.setState(CardRenderState.UNDEFINED);
               }
             },
             { once: true }

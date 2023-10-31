@@ -1,6 +1,7 @@
 import { Card } from "./card";
 import { getGameGUI } from "../gui/gui";
 import { Tools } from "@babylonjs/core";
+import { Player } from "../characters/player";
 
 let globalCardManager: CardManager | null = null;
 
@@ -13,7 +14,7 @@ export class CardManager {
   private hand: Card[] = [];
   private discardPile: Card[] = [];
 
-  constructor() {
+  constructor(private player: Player) {
     if (globalCardManager) throw new Error("Card manager already exists");
     globalCardManager = this;
   }
@@ -48,10 +49,15 @@ export class CardManager {
     return Promise.all(draws);
   }
 
+  canPlayCardFromHand(index: number) {
+    return this.player.mana >= this.hand[index].manaCost;
+  }
+
   async playCardFromhand(index: number) {
     const playedCard = this.hand.splice(index, 1)[0];
     this.renderHand();
     await playedCard.play();
+    this.player.mana -= playedCard.manaCost;
     playedCard.dispose();
     this.discardPile.push(playedCard);
     this.updateGui();
