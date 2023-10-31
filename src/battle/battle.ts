@@ -32,6 +32,10 @@ export class Battle {
   getDefaultOpponent(): Character {
     return this.opponents[0];
   }
+
+  getDefaultHero(): Character {
+    return this.heroes[0];
+  }
 }
 
 export function getBattle(): Battle {

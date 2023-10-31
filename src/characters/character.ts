@@ -29,6 +29,11 @@ export class Character {
     this.renderer?.gui.update({ health: this.health, block: this.block });
   }
 
+  addBlock(block: number) {
+    this.block += block;
+    this.renderer?.gui.update({ block: this.block });
+  }
+
   dispose() {
     this.renderer?.dispose();
     this.renderer = null;
