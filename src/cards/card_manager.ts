@@ -5,6 +5,11 @@ import { Player } from "../characters/player";
 
 let globalCardManager: CardManager | null = null;
 
+enum CardManagerState {
+  UNDEFINED,
+  PLAYING_CARD,
+}
+
 /**
  * A class for managing card positioning, hands,
  * decks, and discard piles.
@@ -13,6 +18,7 @@ export class CardManager {
   private drawPile: Card[] = [];
   private hand: Card[] = [];
   private discardPile: Card[] = [];
+  state = CardManagerState.UNDEFINED;
 
   constructor(private player: Player) {
     if (globalCardManager) throw new Error("Card manager already exists");
@@ -49,11 +55,15 @@ export class CardManager {
     return Promise.all(draws);
   }
 
-  canPlayCardFromHand(index: number) {
-    return this.player.mana >= this.hand[index].manaCost;
+  canPlayCardFromHand(index: number): boolean {
+    return (
+      this.state === CardManagerState.UNDEFINED &&
+      this.player.mana >= this.hand[index].manaCost
+    );
   }
 
   async playCardFromhand(index: number) {
+    this.state = CardManagerState.PLAYING_CARD;
     const playedCard = this.hand.splice(index, 1)[0];
     this.renderHand();
     await playedCard.play();
@@ -61,6 +71,7 @@ export class CardManager {
     playedCard.dispose();
     this.discardPile.push(playedCard);
     this.updateGui();
+    this.state = CardManagerState.UNDEFINED;
   }
 
   discardCardFromHand(index: number) {
