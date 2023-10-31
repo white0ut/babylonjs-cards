@@ -7,6 +7,7 @@ export class Battle {
   heroes: Character[];
   /** Right side.  */
   opponents: Character[];
+  currentTurn = 0;
 
   constructor(heroes: Character[], opponents: Character[]) {
     if (globalBattle) throw new Error("Battle already exists");
@@ -27,6 +28,16 @@ export class Battle {
       })
     );
     await Promise.all([...heroRender, ...opponentRender]);
+  }
+
+  async startNextTurn() {
+    if (this.currentTurn < this.heroes.length) {
+      await this.heroes[this.currentTurn].takeTurn();
+    } else {
+      await this.opponents[this.currentTurn - this.heroes.length].takeTurn();
+    }
+    this.currentTurn =
+      (this.currentTurn + 1) % (this.heroes.length + this.opponents.length);
   }
 
   getDefaultOpponent(): Character {

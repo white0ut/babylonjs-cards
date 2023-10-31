@@ -9,6 +9,7 @@ export class DefendCard extends Card {
       title: "Defend",
       description: "Add 5 block",
       illustrationUrl: defendCardIllustrationUrl,
+      manaCost: 1,
     });
   }
 

@@ -2,13 +2,13 @@ import "./style.css";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { App } from "./app";
-import { CardManager } from "./cards/card_manager";
 import { GameGUI } from "./gui/gui";
 import { AttackCard } from "./cards/card_implentations/attack/card";
 import { DefendCard } from "./cards/card_implentations/defend/card";
 import { Card } from "./cards/card";
 import { Character } from "./characters/character";
 import { Battle } from "./battle/battle";
+import { Player } from "./characters/player";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera
@@ -39,20 +39,18 @@ async function createStarterScene(app: App) {
   );
 
   // Create a battle.
-  const battle = new Battle([new Character(50, 0)], [new Character(25, 10)]);
-  await battle.render();
-
-  await GameGUI.createGameGUI();
-
-  const cardManager = new CardManager();
   const starterDeck: Card[] = [];
   for (let i = 0; i < 10; i++) {
     starterDeck.push(new AttackCard());
     starterDeck.push(new DefendCard());
   }
-  cardManager.createDrawPile(starterDeck);
-  await cardManager.drawCardsToHand(5);
-  cardManager.renderHand();
+  const player = new Player(3, starterDeck);
+  const battle = new Battle([player], [new Character(25, 10)]);
+  await battle.render();
+
+  await GameGUI.createGameGUI();
+
+  await battle.startNextTurn();
 }
 
 async function main() {

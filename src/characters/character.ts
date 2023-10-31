@@ -18,6 +18,10 @@ export class Character {
     });
   }
 
+  async takeTurn(): Promise<void> {
+    return Promise.resolve();
+  }
+
   takeDamage(damage: number) {
     if (damage < this.block) {
       this.block -= damage;

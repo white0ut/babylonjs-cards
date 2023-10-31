@@ -11,6 +11,7 @@ export interface CardOptions {
   title: string;
   description: string;
   illustrationUrl?: string;
+  manaCost: number;
 }
 
 export abstract class Card {
@@ -22,7 +23,7 @@ export abstract class Card {
   private imageElement: HTMLImageElement | null = null;
   static illustrations = new Map<string, Promise<HTMLImageElement>>();
 
-  constructor(options: CardOptions) {
+  constructor(private readonly options: CardOptions) {
     this.title = options.title;
     this.description = options.description;
     this.illustrationUrl = options.illustrationUrl;
@@ -39,7 +40,7 @@ export abstract class Card {
   }
 
   async play(): Promise<void> {
-    console.warn(`play unimplemented for ${this.title}`);
+    console.warn(`play unimplemented for ${this.options.title}`);
     await Tools.DelayAsync(500);
   }
 

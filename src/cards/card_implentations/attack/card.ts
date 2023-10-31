@@ -9,6 +9,7 @@ export class AttackCard extends Card {
       title: "Attack",
       description: "Deal 6 damage",
       illustrationUrl: attackCardIllustrationUrl,
+      manaCost: 1,
     });
   }
 
