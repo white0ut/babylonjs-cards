@@ -8,6 +8,7 @@ import { AttackCard } from "./cards/card_implentations/attack/card";
 import { DefendCard } from "./cards/card_implentations/defend/card";
 import { Card } from "./cards/card";
 import { Character } from "./characters/character";
+import { Battle } from "./battle/battle";
 
 async function createStarterScene(app: App) {
   // Creates and positions a free camera
@@ -37,9 +38,9 @@ async function createStarterScene(app: App) {
     app.scene
   );
 
-  // Create a character.
-  const enemy = new Character(25);
-  await enemy.initializeRenderer();
+  // Create a battle.
+  const battle = new Battle([new Character(50, 0)], [new Character(25, 10)]);
+  await battle.render();
 
   await GameGUI.createGameGUI();
 

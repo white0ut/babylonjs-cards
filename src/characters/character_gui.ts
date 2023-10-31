@@ -33,10 +33,10 @@ export class CharacterGUI {
   }
 
   update(stats: { health?: number; block?: number }) {
-    if (stats.health) {
+    if (stats.health !== undefined) {
       this.healthLabel.text = `Health: ${stats.health}`;
     }
-    if (stats.block) {
+    if (stats.block !== undefined) {
       this.blockLabel.text = `Block: ${stats.block}`;
     }
   }
