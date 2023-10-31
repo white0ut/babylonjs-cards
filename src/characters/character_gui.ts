@@ -6,14 +6,14 @@ export class CharacterGUI {
   private readonly blockLabel: GUI.TextBlock;
 
   constructor(mesh: AbstractMesh, health: number, block: number) {
-    const labels = this.createGuiForMesh(mesh, health, block);
+    const labels = this.createGuiForMesh(mesh);
     this.healthLabel = labels.healthLabel;
     this.blockLabel = labels.blockLabel;
 
     this.update({ health, block });
   }
 
-  createGuiForMesh(mesh: AbstractMesh, health: number, block: number) {
+  createGuiForMesh(mesh: AbstractMesh) {
     const texture = GUI.AdvancedDynamicTexture.CreateForMesh(mesh, 200, 200);
     const healthLabel = new GUI.TextBlock("Health label");
     const blockLabel = new GUI.TextBlock("Block label");

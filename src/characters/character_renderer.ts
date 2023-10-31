@@ -47,6 +47,8 @@ export class CharacterRenderer {
     plane.position = new B.Vector3(0, 1.6, 0);
     plane.billboardMode = B.Mesh.BILLBOARDMODE_ALL;
 
+    this.rootMesh.onDisposeObservable.addOnce(() => plane.dispose(false, true));
+
     return plane;
   }
 
