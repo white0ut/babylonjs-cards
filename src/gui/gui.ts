@@ -17,7 +17,7 @@ export class GameGUI {
       true,
       getApp().scene
     );
-    await advancedTexture.parseFromSnippetAsync("KHNI6A#5");
+    await advancedTexture.parseFromSnippetAsync("KHNI6A#6");
 
     return new GameGUI(advancedTexture);
   }
