@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@preact/preset-vite": "^2.6.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
   },
@@ -17,6 +18,8 @@
     "@babylonjs/gui": "^6.25.0",
     "@babylonjs/inspector": "^6.22.1",
     "@babylonjs/loaders": "^6.22.1",
-    "babylonjs-loaders": "^6.22.1"
+    "@preact/signals": "^1.2.1",
+    "babylonjs-loaders": "^6.22.1",
+    "preact": "^10.18.1"
   }
 }

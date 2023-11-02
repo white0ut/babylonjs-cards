@@ -1,5 +1,6 @@
 import { Character } from "../characters/character";
-import { AdvancedTextureGameGUI } from "../gui/gui";
+import { AdvancedTextureGameGUI, DOMGUI } from "../gui/gui";
+import { PreactGUI } from "../gui/preact_gui";
 
 let globalBattle: Battle | null = null;
 
@@ -18,7 +19,9 @@ export class Battle {
   }
 
   async render() {
-    await AdvancedTextureGameGUI.createGameGUI();
+    // await AdvancedTextureGameGUI.createGameGUI();
+    new PreactGUI();
+
     const heroRender = this.heroes.map((c) =>
       c.initializeRenderer().then(() => {
         c.renderer!.rootMesh.position.x = -1.5;
