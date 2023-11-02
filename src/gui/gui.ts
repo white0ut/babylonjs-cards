@@ -4,7 +4,31 @@ import { getCardManger } from "../cards/card_manager";
 
 let globalGameGui: GameGUI | null = null;
 
-export class GameGUI {
+export abstract class GameGUI {
+  constructor() {
+    if (globalGameGui) throw new Error("Game GUI already exists");
+    globalGameGui = this;
+  }
+
+  abstract updateDrawPile(count: number): void;
+  abstract updateDiscardPile(count: number): void;
+  abstract updateMana(count: number): void;
+
+  abstract setDrawButtonEnabled(enabled: boolean): void;
+
+  async handleDrawCard(): Promise<void> {
+    await getCardManger().drawCardsToHand(1);
+    getCardManger().renderHand(25);
+  }
+
+  async handleDiscardHand(): Promise<void> {
+    this.setDrawButtonEnabled(false);
+    await getCardManger().discardHand();
+    this.setDrawButtonEnabled(true);
+  }
+}
+
+export class AdvancedTextureGameGUI extends GameGUI {
   private readonly drawPileLabel: GUI.TextBlock;
   private readonly discardPileLabel: GUI.TextBlock;
   private readonly manaLabel: GUI.TextBlock;
@@ -19,12 +43,11 @@ export class GameGUI {
     );
     await advancedTexture.parseFromSnippetAsync("KHNI6A#6");
 
-    return new GameGUI(advancedTexture);
+    return new AdvancedTextureGameGUI(advancedTexture);
   }
 
   constructor(advancedTexture: GUI.AdvancedDynamicTexture) {
-    if (globalGameGui) throw new Error("Game GUI already exists");
-    globalGameGui = this;
+    super();
 
     const [container] = advancedTexture.getChildren();
     this.drawPileLabel = container.getChildByName(
@@ -40,14 +63,15 @@ export class GameGUI {
     ) as GUI.Button;
 
     this.drawButton.onPointerUpObservable.add(async () => {
-      await getCardManger().drawCardsToHand(1);
-      getCardManger().renderHand(25);
+      await this.handleDrawCard();
     });
     this.discardHandButton.onPointerUpObservable.add(async () => {
-      this.drawButton.isEnabled = false;
-      await getCardManger().discardHand();
-      this.drawButton.isEnabled = true;
+      await this.handleDiscardHand();
     });
+  }
+
+  setDrawButtonEnabled(enabled: boolean): void {
+    this.drawButton.isEnabled = enabled;
   }
 
   updateDrawPile(count: number) {
@@ -58,7 +82,6 @@ export class GameGUI {
     this.discardPileLabel.text = `Discard pile: ${count}`;
   }
 
-  // TODO: mana label is off the screen.
   updateMana(count: number) {
     this.manaLabel.text = `Mana: ${count}`;
   }

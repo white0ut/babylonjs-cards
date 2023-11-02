@@ -1,5 +1,5 @@
 import { Character } from "../characters/character";
-import { GameGUI } from "../gui/gui";
+import { AdvancedTextureGameGUI } from "../gui/gui";
 
 let globalBattle: Battle | null = null;
 
@@ -18,7 +18,7 @@ export class Battle {
   }
 
   async render() {
-    await GameGUI.createGameGUI();
+    await AdvancedTextureGameGUI.createGameGUI();
     const heroRender = this.heroes.map((c) =>
       c.initializeRenderer().then(() => {
         c.renderer!.rootMesh.position.x = -1.5;
