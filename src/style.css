@@ -6,8 +6,26 @@ body {
   background-color: #c3c3c3;
 }
 
+.app-container {
+  display: grid;
+}
+
 #app {
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
   background-color: #fff;
+}
+
+#gui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  color: #fff;
+}
+
+#gui button {
+  pointer-events: all;
 }
